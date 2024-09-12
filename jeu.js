@@ -7,16 +7,16 @@ class LightCycle {
     alive = true;
 
     reset(yPos, yDir) {
-        this.x = NUM_CELLS_HORIZONTAL / 2
-        this.y = yPos
-        this.vx = 0
-        this.vy = yDir
-        this.alive = true
+        this.x = NUM_CELLS_HORIZONTAL / 2;
+        this.y = yPos;
+        this.vx = 0;
+        this.vy = yDir;
+        this.alive = true;
     }
 
     constructor(yPos, yDir) {
-        this.y = yPos
-        this.vy = yDir
+        this.y = yPos;
+        this.vy = yDir;
     }
 }
 
@@ -25,8 +25,8 @@ class Point2D {
     y = 0;
 
     reset() {
-        this.x = 0
-        this.y = 0
+        this.x = 0;
+        this.y = 0;
     }
 }
 
@@ -54,11 +54,16 @@ var NUM_CELLS_VERTICAL = canvas.height / cellSize;
 var x0 = (canvas.width - NUM_CELLS_HORIZONTAL * cellSize) / 2;
 var y0 = (canvas.height - NUM_CELLS_VERTICAL * cellSize) / 2;
 
-var grid = [[]]
+var grid = [[]];
 var CELL_EMPTY = 0;
 var CELL_OCCUPIED = 1;
 
 // ====================================== Game Setup ======================================
+// Winners Count
+var playerOneWins = 0;
+var playerTwoWins = 0;
+var draws = 0;
+
 // Mouse Position
 const mouseDownPos = new Point2D();
 const mouseUpPos = new Point2D();
@@ -70,7 +75,7 @@ const lightCycle1 = new LightCycle(NUM_CELLS_VERTICAL - 2, -1);
 // Current y-position and y-direction of light cycle 2
 const lightCycle2 = new LightCycle(1, 1);
 
-function setupGrid(){
+function setupGrid() {
     grid = create2DArray(NUM_CELLS_HORIZONTAL, NUM_CELLS_VERTICAL);
     grid[lightCycle1.x][lightCycle1.y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
     grid[lightCycle2.x][lightCycle2.y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
@@ -78,18 +83,28 @@ function setupGrid(){
 
 function resetGame() {
     // Reset LightCyles
-    lightCycle1.reset(NUM_CELLS_VERTICAL - 2, -1)
-    lightCycle2.reset(1, 1)
+    lightCycle1.reset(NUM_CELLS_VERTICAL - 2, -1);
+    lightCycle2.reset(1, 1);
 
     // Reset Mouse Position
-    mouseDownPos.reset()
-    mouseUpPos.reset()
-    mouseDownInCanvas = false
+    mouseDownPos.reset();
+    mouseUpPos.reset();
+    mouseDownInCanvas = false;
 
-    setupGrid()
+    setupGrid();
 }
 
-setupGrid()
+function countWinner() {
+    if (!lightCycle1.alive && !lightCycle2.alive) {
+        drawsDisplay.innerHTML = ++draws;
+    } else if (lightCycle1.alive) {
+        playerOneWinsDisplay.innerHTML = ++playerOneWins;
+    } else {
+        playerTwoWinsDisplay.innerHTML = ++playerTwoWins;
+    }
+}
+
+setupGrid();
 
 // ====================================== Controls ======================================
 function keyDownHandler(e) {
@@ -222,7 +237,8 @@ var advance = function () {
         updateLightCycle(lightCycle2);
         redraw();
     } else {
-        resetGame()
+        countWinner();
+        resetGame();
     }
 };
 
