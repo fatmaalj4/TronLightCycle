@@ -27,30 +27,26 @@ var grid = create2DArray(NUM_CELLS_HORIZONTAL, NUM_CELLS_VERTICAL);
 var CELL_EMPTY = 0;
 var CELL_OCCUPIED = 1;
 
-// class LightCycle {
-//     x = 0
-//     y = 0
-//     vx = 0
-//     vy = 0
-//     alive = true
-// }
+class LightCycle {
+    x = NUM_CELLS_HORIZONTAL / 2
+    y = 0
+    vx = 0 // positive for right
+    vy = 0 // positive for down
+    alive = true
+}
 
 // Current position and direction of light cycle 1
-var lightCycle1_x = NUM_CELLS_HORIZONTAL / 2;
-var lightCycle1_y = NUM_CELLS_VERTICAL - 2;
-var lightCycle1_vx = 0; // positive for right
-var lightCycle1_vy = -1; // positive for down
-var lightCycle1_alive = true;
+const lightCycle1 = new LightCycle()
+lightCycle1.y = NUM_CELLS_VERTICAL - 2
+lightCycle1.vy = -1
 
-// Current position and direction of light cycle 2
-var lightCycle2_x = NUM_CELLS_HORIZONTAL / 2;
-var lightCycle2_y = 2;
-var lightCycle2_vx = 0; // positive for right
-var lightCycle2_vy = 1; // positive for down
-var lightCycle2_alive = true;
+// Current y-position and y-direction of light cycle 2
+const lightCycle2 = new LightCycle()
+lightCycle2.y = 2
+lightCycle2.vy = 1
 
-grid[lightCycle1_x][lightCycle1_y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
-grid[lightCycle2_x][lightCycle2_y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
+grid[lightCycle1.x][lightCycle1.y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
+grid[lightCycle2.x][lightCycle2.y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
 
 function keyDownHandler(e) {
     // console.log("keyCode: " + e.keyCode );
@@ -76,11 +72,11 @@ function keyDownHandler(e) {
     }
 
     if (arrowKeys.includes(keyCode)) { // Player 1
-        lightCycle1_vx = vx;
-        lightCycle1_vy = vy;
+        lightCycle1.vx = vx;
+        lightCycle1.vy = vy;
     } else if (wasdKeys.includes(keyCode)) { // Player 2
-        lightCycle2_vx = vx;
-        lightCycle2_vy = vy;
+        lightCycle2.vx = vx;
+        lightCycle2.vy = vy;
     }
 }
 
@@ -99,13 +95,14 @@ var redraw = function () {
                 C.fillRect(x0 + i * cellSize + 1, y0 + j * cellSize + 1, cellSize - 2, cellSize - 2);
         }
     }
-    // Player 1
-    C.fillStyle = lightCycle1_alive ? "#ff0000" : "#ffffff";
-    C.fillRect(x0 + lightCycle1_x * cellSize, y0 + lightCycle1_y * cellSize, cellSize, cellSize);
 
-    // Player 2
-    C.fillStyle = lightCycle2_alive ? "#ff0000" : "#ffffff";
-    C.fillRect(x0 + lightCycle2_x * cellSize, y0 + lightCycle2_y * cellSize, cellSize, cellSize);
+    const getHeadColor = (lightCycle) => {
+        C.fillStyle = lightCycle.alive ? "#ff0000" : "#ffffff";
+        C.fillRect(x0 + lightCycle.x * cellSize, y0 + lightCycle.y * cellSize, cellSize, cellSize);
+    }
+
+    getHeadColor(lightCycle1) // Player 1
+    getHeadColor(lightCycle2) // Player 2
 }
 
 var hasCollided = function (new_x, new_y) {
@@ -114,36 +111,25 @@ var hasCollided = function (new_x, new_y) {
         || grid[new_x][new_y] === CELL_OCCUPIED
 }
 
+var updateLightCycle = function (lightCycle) {
+    var new_x = lightCycle.x + lightCycle.vx;
+    var new_y = lightCycle.y + lightCycle.vy;
+
+    // Check for collision with grid boundaries and with trail
+    if (hasCollided(new_x, new_y)) {
+        lightCycle.alive = false;
+    }
+    else {
+        grid[new_x][new_y] = CELL_OCCUPIED;
+        lightCycle.x = new_x;
+        lightCycle.y = new_y;
+    }
+}
+
 var advance = function () {
-
-    if (lightCycle1_alive && lightCycle2_alive) {
-        if (lightCycle1_alive) {
-            var new1_x = lightCycle1_x + lightCycle1_vx;
-            var new1_y = lightCycle1_y + lightCycle1_vy;
-
-            // Check for collision with grid boundaries and with trail
-            if (hasCollided(new1_x, new1_y)) {
-                lightCycle1_alive = false;
-            }
-            else {
-                grid[new1_x][new1_y] = CELL_OCCUPIED;
-                lightCycle1_x = new1_x;
-                lightCycle1_y = new1_y;
-            }
-        } if (lightCycle2_alive) {
-            var new2_x = lightCycle2_x + lightCycle2_vx;
-            var new2_y = lightCycle2_y + lightCycle2_vy;
-
-            // Check for collision with grid boundaries and with trail
-            if (hasCollided(new2_x, new2_y)) {
-                lightCycle2_alive = false;
-            }
-            else {
-                grid[new2_x][new2_y] = CELL_OCCUPIED;
-                lightCycle2_x = new2_x;
-                lightCycle2_y = new2_y;
-            }
-        }
+    if (lightCycle1.alive && lightCycle2.alive) {
+        updateLightCycle(lightCycle1)
+        updateLightCycle(lightCycle2)
         redraw();
     }
 }
