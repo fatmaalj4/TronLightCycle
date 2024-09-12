@@ -5,11 +5,29 @@ class LightCycle {
     vx = 0; // positive for right
     vy = 0; // positive for down
     alive = true;
+
+    reset(yPos, yDir) {
+        this.x = NUM_CELLS_HORIZONTAL / 2
+        this.y = yPos
+        this.vx = 0
+        this.vy = yDir
+        this.alive = true
+    }
+
+    constructor(yPos, yDir) {
+        this.y = yPos
+        this.vy = yDir
+    }
 }
 
 class Point2D {
     x = 0;
     y = 0;
+
+    reset() {
+        this.x = 0
+        this.y = 0
+    }
 }
 
 // ====================================== Canvas Setup ======================================
@@ -36,7 +54,7 @@ var NUM_CELLS_VERTICAL = canvas.height / cellSize;
 var x0 = (canvas.width - NUM_CELLS_HORIZONTAL * cellSize) / 2;
 var y0 = (canvas.height - NUM_CELLS_VERTICAL * cellSize) / 2;
 
-var grid = create2DArray(NUM_CELLS_HORIZONTAL, NUM_CELLS_VERTICAL);
+var grid = [[]]
 var CELL_EMPTY = 0;
 var CELL_OCCUPIED = 1;
 
@@ -47,17 +65,31 @@ const mouseUpPos = new Point2D();
 var mouseDownInCanvas = false; // Indicates that the mouse down happened inside the canvas
 
 // Current position and direction of light cycle 1
-const lightCycle1 = new LightCycle();
-lightCycle1.y = NUM_CELLS_VERTICAL - 2;
-lightCycle1.vy = -1;
+const lightCycle1 = new LightCycle(NUM_CELLS_VERTICAL - 2, -1);
 
 // Current y-position and y-direction of light cycle 2
-const lightCycle2 = new LightCycle();
-lightCycle2.y = 1;
-lightCycle2.vy = 1;
+const lightCycle2 = new LightCycle(1, 1);
 
-grid[lightCycle1.x][lightCycle1.y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
-grid[lightCycle2.x][lightCycle2.y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
+function setupGrid(){
+    grid = create2DArray(NUM_CELLS_HORIZONTAL, NUM_CELLS_VERTICAL);
+    grid[lightCycle1.x][lightCycle1.y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
+    grid[lightCycle2.x][lightCycle2.y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
+}
+
+function resetGame() {
+    // Reset LightCyles
+    lightCycle1.reset(NUM_CELLS_VERTICAL - 2, -1)
+    lightCycle2.reset(1, 1)
+
+    // Reset Mouse Position
+    mouseDownPos.reset()
+    mouseUpPos.reset()
+    mouseDownInCanvas = false
+
+    setupGrid()
+}
+
+setupGrid()
 
 // ====================================== Controls ======================================
 function keyDownHandler(e) {
@@ -189,9 +221,11 @@ var advance = function () {
         updateLightCycle(lightCycle1);
         updateLightCycle(lightCycle2);
         redraw();
+    } else {
+        resetGame()
     }
 };
 
 setInterval(function () {
     advance();
-}, 100 /*milliseconds*/);
+}, 50 /*milliseconds*/);
