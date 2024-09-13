@@ -60,6 +60,8 @@ var CELL_OCCUPIED = 1;
 
 var intervalId; 
 
+var lightCycle1_trailColor = document.getElementById('moto1color').value;
+var lightCycle2_trailColor = document.getElementById('moto2color').value;
 // ====================================== Game Setup ======================================
 // Winners Count
 var playerOneWins = 0;
@@ -88,6 +90,8 @@ function resetGame() {
     lightCycle1.reset(NUM_CELLS_VERTICAL - 2, -1);
     lightCycle2.reset(1, 1);
 
+    lightCycle1_trailColor = document.getElementById('moto1color').value;
+    lightCycle2_trailColor = document.getElementById('moto2color').value;
     // Reset Mouse Position
     mouseDownPos.reset();
     mouseUpPos.reset();
@@ -179,22 +183,32 @@ document.onmouseup = mouseUpHandler;
 // ====================================== LightCycle Updates ======================================
 var redraw = function () {
     C.fillStyle = "#000000";
-    // C.clearRect(0, 0, canvas.width, canvas.height);
     C.fillRect(0, 0, canvas.width, canvas.height);
 
-    C.fillStyle = "#00ffff";
+    // Applique les couleurs du tracé des joueurs
     for (var i = 0; i < NUM_CELLS_HORIZONTAL; ++i) {
         for (var j = 0; j < NUM_CELLS_VERTICAL; ++j) {
-            if (grid[i][j] === CELL_OCCUPIED)
+            if (grid[i][j] === 1) {
+                C.fillStyle = lightCycle1_trailColor; // Couleur de joueur 1
                 C.fillRect(
                     x0 + i * cellSize + 1,
                     y0 + j * cellSize + 1,
                     cellSize - 2,
                     cellSize - 2
                 );
+            } else if (grid[i][j] === 2) {
+                C.fillStyle = lightCycle2_trailColor; // Couleur de joueur 2
+                C.fillRect(
+                    x0 + i * cellSize + 1,
+                    y0 + j * cellSize + 1,
+                    cellSize - 2,
+                    cellSize - 2
+                );
+            }
         }
     }
 
+    // Couleur pour la tête de chaque joueur
     const getHeadColor = (lightCycle) => {
         C.fillStyle = lightCycle.alive ? "#ff0000" : "#ffffff";
         C.fillRect(
@@ -209,6 +223,7 @@ var redraw = function () {
     getHeadColor(lightCycle2); // Player 2
 };
 
+
 var hasCollided = function (new_x, new_y) {
     return (
         new_x < 0 ||
@@ -219,7 +234,7 @@ var hasCollided = function (new_x, new_y) {
     );
 };
 
-var updateLightCycle = function (lightCycle) {
+var updateLightCycle = function (lightCycle, playerNum) {
     var new_x = lightCycle.x + lightCycle.vx;
     var new_y = lightCycle.y + lightCycle.vy;
 
@@ -227,22 +242,24 @@ var updateLightCycle = function (lightCycle) {
     if (hasCollided(new_x, new_y)) {
         lightCycle.alive = false;
     } else {
-        grid[new_x][new_y] = CELL_OCCUPIED;
+        grid[new_x][new_y] = playerNum; // 1 pour joueur 1, 2 pour joueur 2
         lightCycle.x = new_x;
         lightCycle.y = new_y;
     }
 };
 
+
 var advance = function () {
     if (lightCycle1.alive && lightCycle2.alive) {
-        updateLightCycle(lightCycle1);
-        updateLightCycle(lightCycle2);
+        updateLightCycle(lightCycle1, 1); // 1 pour joueur 1
+        updateLightCycle(lightCycle2, 2); // 2 pour joueur 2
         redraw();
     } else {
         countWinner();
         resetGame();
     }
 };
+
 function goGame() {
     if (!intervalId) {  // Vérifie si l'intervalle n'est pas déjà actif
         intervalId = setInterval(function() { 
@@ -267,10 +284,19 @@ function restartGame() {
     
     // Réinitialise la grille
     setupGrid(); 
+    
+    // Récupérer les nouvelles couleurs après redémarrage
+    lightCycle1_trailColor = document.getElementById('moto1color').value;
+    lightCycle2_trailColor = document.getElementById('moto2color').value;
+    
+    // Redessine le canvas avec les nouvelles couleurs
     redraw(); 
 
+    // Redémarre le jeu
     goGame(); 
 }
+
+
 
 
 window.onload = function() {
