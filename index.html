@@ -10,17 +10,46 @@
 		td { 
 			text-align: center;
 		}
+
+		/* Flexbox layout to align the canvas and the score/bouton section */
+		.container {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		/* Styling for the section containing the table and buttons */
+		.score-board {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		/* Add spacing between buttons and the table */
+		.button-container {
+			margin-top: 20px;
+		}
+
+		button {
+			padding: 10px 20px;
+			margin: 5px;
+		}
 	</style>
 </head>
 
 <body>
 	<h1 style="font-family: sans-serif;">Tron Light Cycles (Motocyclettes de lumi&egrave;re de Tron)</h1>
-	<div style="display: flex;">
+	
+	<!-- Flexbox container to organize canvas and scoreboard next to each other -->
+	<div class="container">
+		<!-- Canvas for the game -->
 		<div>
 			<canvas id="myCanvas" width="700" height="700" style="border:2px solid #000000;">
 			</canvas>
 		</div>
-		<div>
+		
+		<!-- Scoreboard and buttons -->
+		<div class="score-board">
+			<!-- Table for displaying scores -->
 			<table style="font-family: sans-serif;">
 				<tr>
 					<th>Player 1 Wins</th>
@@ -33,10 +62,19 @@
 					<td id="drawsDisplay">0</td>
 				</tr>
 			</table>
+
+			<!-- Buttons for controlling the game -->
+			<div class="button-container">
+				<button onclick="pauseGame()">Pause</button>
+				<button onclick="goGame()">Go</button>
+				<button onclick="restartGame()">Restart</button>
+			</div>
 		</div>
 	</div>
+
 	<script src="jeu.js"></script>
 
 </body>
 
 </html>
+

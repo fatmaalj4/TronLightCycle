@@ -58,6 +58,8 @@ var grid = [[]];
 var CELL_EMPTY = 0;
 var CELL_OCCUPIED = 1;
 
+var intervalId; 
+
 // ====================================== Game Setup ======================================
 // Winners Count
 var playerOneWins = 0;
@@ -241,7 +243,36 @@ var advance = function () {
         resetGame();
     }
 };
+function goGame() {
+    if (!intervalId) {  // Vérifie si l'intervalle n'est pas déjà actif
+        intervalId = setInterval(function() { 
+            advance(); 
+        }, 100); 
+    }
+}
 
-setInterval(function () {
-    advance();
-}, 50 /*milliseconds*/);
+function pauseGame() {
+    if (intervalId) {  // Vérifie si l'intervalle est actif
+        clearInterval(intervalId);
+        intervalId = null;
+    }
+}
+
+function restartGame() {
+    pauseGame(); // Stoppe la boucle de jeu actuelle
+    
+    // Réinitialise l'état des LightCycles
+    lightCycle1.reset(NUM_CELLS_VERTICAL - 2, -1); // player 1
+    lightCycle2.reset(1, 1); // player 2
+    
+    // Réinitialise la grille
+    setupGrid(); 
+    redraw(); 
+
+    goGame(); 
+}
+
+
+window.onload = function() {
+    goGame();
+};
