@@ -187,7 +187,7 @@ var redraw = function () {
     C.fillStyle = "#000000";
     C.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Applique les couleurs du tracé des joueurs
+    //les couleurs du tracé des joueurs
     for (var i = 0; i < NUM_CELLS_HORIZONTAL; ++i) {
         for (var j = 0; j < NUM_CELLS_VERTICAL; ++j) {
             if (grid[i][j] === 1) {
