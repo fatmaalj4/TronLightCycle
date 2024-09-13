@@ -62,6 +62,8 @@ var intervalId;
 
 var lightCycle1_trailColor = document.getElementById('moto1color').value;
 var lightCycle2_trailColor = document.getElementById('moto2color').value;
+
+var isGameRunning = false;
 // ====================================== Game Setup ======================================
 // Winners Count
 var playerOneWins = 0;
@@ -185,7 +187,7 @@ var redraw = function () {
     C.fillStyle = "#000000";
     C.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Applique les couleurs du tracé des joueurs
+    //les couleurs du tracé des joueurs
     for (var i = 0; i < NUM_CELLS_HORIZONTAL; ++i) {
         for (var j = 0; j < NUM_CELLS_VERTICAL; ++j) {
             if (grid[i][j] === 1) {
@@ -208,7 +210,7 @@ var redraw = function () {
         }
     }
 
-    // Couleur pour la tête de chaque joueur
+    
     const getHeadColor = (lightCycle) => {
         C.fillStyle = lightCycle.alive ? "#ff0000" : "#ffffff";
         C.fillRect(
@@ -249,29 +251,34 @@ var updateLightCycle = function (lightCycle, playerNum) {
 };
 
 
-var advance = function () {
+function advance() {
     if (lightCycle1.alive && lightCycle2.alive) {
         updateLightCycle(lightCycle1, 1); // 1 pour joueur 1
         updateLightCycle(lightCycle2, 2); // 2 pour joueur 2
         redraw();
+        // un message pour prouver que l'animation continue
+        if (isGameRunning) {
+            console.log("Game is running: animating next frame");
+            setTimeout(advance, 100); 
+        }
     } else {
         countWinner();
         resetGame();
     }
-};
+}
 
 function goGame() {
-    if (!intervalId) {  // Vérifie si l'intervalle n'est pas déjà actif
-        intervalId = setInterval(function() { 
-            advance(); 
-        }, 100); 
+    if (!isGameRunning) { 
+        isGameRunning = true;
+        console.log("Game started");
+        setTimeout(advance, 100); // Lance la première itération
     }
 }
 
 function pauseGame() {
-    if (intervalId) {  // Vérifie si l'intervalle est actif
-        clearInterval(intervalId);
-        intervalId = null;
+    if (isGameRunning) {
+        isGameRunning = false; // Arrête le jeu
+        console.log("Game paused");
     }
 }
 
