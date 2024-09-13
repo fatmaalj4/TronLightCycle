@@ -210,7 +210,7 @@ var redraw = function () {
         }
     }
 
-    // Couleur pour la tête de chaque joueur
+    
     const getHeadColor = (lightCycle) => {
         C.fillStyle = lightCycle.alive ? "#ff0000" : "#ffffff";
         C.fillRect(
