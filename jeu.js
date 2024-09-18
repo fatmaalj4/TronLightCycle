@@ -65,6 +65,8 @@ var lightCycle2_trailColor = document.getElementById('moto2color').value;
 
 var isGameRunning = false;
 // ====================================== Game Setup ======================================
+let timeSpeed = 100
+
 // Winners Count
 var playerOneWins = 0;
 var playerTwoWins = 0;
@@ -88,6 +90,8 @@ function setupGrid() {
 }
 
 function resetGame() {
+    timeSpeed = 100
+
     // Reset LightCyles
     lightCycle1.reset(NUM_CELLS_VERTICAL - 2, -1);
     lightCycle2.reset(1, 1);
@@ -309,3 +313,12 @@ function restartGame() {
 window.onload = function() {
     goGame();
 };
+function advanceTimeout() {
+    timeSpeed *= 0.995
+    // console.log('Time Speed: ' + timeSpeed)
+
+    advance();
+    setTimeout(advanceTimeout, timeSpeed);
+}
+
+advanceTimeout();
