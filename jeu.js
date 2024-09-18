@@ -60,7 +60,6 @@ var CELL_OCCUPIED = 1;
 
 // ====================================== Game Setup ======================================
 let timeSpeed = 100
-let advanceCount = 0
 
 // Winners Count
 var playerOneWins = 0;
@@ -86,7 +85,6 @@ function setupGrid() {
 
 function resetGame() {
     timeSpeed = 100
-    advanceCount = 0
 
     // Reset LightCyles
     lightCycle1.reset(NUM_CELLS_VERTICAL - 2, -1);
@@ -249,12 +247,9 @@ var advance = function () {
 };
 
 function advanceTimeout() {
-    // timeSpeed = (1-Math.sqrt(++advanceCount))*5 + 100
-    // timeSpeed *= 0.995
-    timeSpeed = 100 / Math.sqrt(1 + (++advanceCount / 10))
+    timeSpeed *= 0.995
+    // console.log('Time Speed: ' + timeSpeed)
 
-    // console.log(timeSpeed)
-    // console.log(advanceCount)
     advance();
     setTimeout(advanceTimeout, timeSpeed);
 }
