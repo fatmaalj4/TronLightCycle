@@ -254,17 +254,23 @@ var updateLightCycle = function (lightCycle, playerNum) {
     }
 };
 
+function advanceTimeout() {
+    timeSpeed *= 0.995
+    // console.log('Time Speed: ' + timeSpeed)
+
+    // un message pour prouver que l'animation continue
+    if (isGameRunning) {
+        console.log("Game is running: animating next frame");
+        advance();
+        setTimeout(advanceTimeout, timeSpeed);
+    }
+}
 
 function advance() {
     if (lightCycle1.alive && lightCycle2.alive) {
         updateLightCycle(lightCycle1, 1); // 1 pour joueur 1
         updateLightCycle(lightCycle2, 2); // 2 pour joueur 2
         redraw();
-        // un message pour prouver que l'animation continue
-        if (isGameRunning) {
-            console.log("Game is running: animating next frame");
-            setTimeout(advance, 100); 
-        }
     } else {
         countWinner();
         resetGame();
@@ -275,7 +281,8 @@ function goGame() {
     if (!isGameRunning) { 
         isGameRunning = true;
         console.log("Game started");
-        setTimeout(advance, 100); // Lance la première itération
+        advanceTimeout(); // Lance la première itération
+        // setTimeout(advance, 100); // Lance la première itération
     }
 }
 
@@ -313,12 +320,3 @@ function restartGame() {
 window.onload = function() {
     goGame();
 };
-function advanceTimeout() {
-    timeSpeed *= 0.995
-    // console.log('Time Speed: ' + timeSpeed)
-
-    advance();
-    setTimeout(advanceTimeout, timeSpeed);
-}
-
-advanceTimeout();
