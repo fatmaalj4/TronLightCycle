@@ -56,9 +56,8 @@ var y0 = (canvas.height - NUM_CELLS_VERTICAL * cellSize) / 2;
 
 var grid = [[]];
 var CELL_EMPTY = 0;
-var CELL_OCCUPIED = 1;
-
-var intervalId; 
+var CELL_OCCUPIED_P1 = 1;
+var CELL_OCCUPIED_P2 = 2;
 
 var lightCycle1_trailColor = document.getElementById('moto1color').value;
 var lightCycle2_trailColor = document.getElementById('moto2color').value;
@@ -85,8 +84,8 @@ const lightCycle2 = new LightCycle(1, 1);
 
 function setupGrid() {
     grid = create2DArray(NUM_CELLS_HORIZONTAL, NUM_CELLS_VERTICAL);
-    grid[lightCycle1.x][lightCycle1.y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
-    grid[lightCycle2.x][lightCycle2.y] = CELL_OCCUPIED; // to mark the initial grid cell as occupied
+    grid[lightCycle1.x][lightCycle1.y] = CELL_OCCUPIED_P1; // to mark the initial grid cell as occupied
+    grid[lightCycle2.x][lightCycle2.y] = CELL_OCCUPIED_P2; // to mark the initial grid cell as occupied
 }
 
 function resetGame() {
@@ -98,6 +97,7 @@ function resetGame() {
 
     lightCycle1_trailColor = document.getElementById('moto1color').value;
     lightCycle2_trailColor = document.getElementById('moto2color').value;
+
     // Reset Mouse Position
     mouseDownPos.reset();
     mouseUpPos.reset();
@@ -236,7 +236,8 @@ var hasCollided = function (new_x, new_y) {
         new_x >= NUM_CELLS_HORIZONTAL ||
         new_y < 0 ||
         new_y >= NUM_CELLS_VERTICAL ||
-        grid[new_x][new_y] === CELL_OCCUPIED
+        grid[new_x][new_y] === CELL_OCCUPIED_P1 || 
+        grid[new_x][new_y] === CELL_OCCUPIED_P2
     );
 };
 
@@ -277,7 +278,7 @@ function advance() {
     }
 }
 
-function goGame() {
+function startGame() {
     if (!isGameRunning) { 
         isGameRunning = true;
         console.log("Game started");
@@ -311,12 +312,12 @@ function restartGame() {
     redraw(); 
 
     // Redémarre le jeu
-    goGame(); 
+    startGame(); 
 }
 
 
 
 
 window.onload = function() {
-    goGame();
+    startGame();
 };
