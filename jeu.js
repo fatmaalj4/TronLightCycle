@@ -65,6 +65,7 @@ var lightCycle2_trailColor = document.getElementById('moto2color').value;
 var isGameRunning = false;
 // ====================================== Game Setup ======================================
 let timeSpeed = 100
+let timer;
 
 // Winners Count
 var playerOneWins = 0;
@@ -86,24 +87,6 @@ function setupGrid() {
     grid = create2DArray(NUM_CELLS_HORIZONTAL, NUM_CELLS_VERTICAL);
     grid[lightCycle1.x][lightCycle1.y] = CELL_OCCUPIED_P1; // to mark the initial grid cell as occupied
     grid[lightCycle2.x][lightCycle2.y] = CELL_OCCUPIED_P2; // to mark the initial grid cell as occupied
-}
-
-function resetGame() {
-    timeSpeed = 100
-
-    // Reset LightCyles
-    lightCycle1.reset(NUM_CELLS_VERTICAL - 2, -1);
-    lightCycle2.reset(1, 1);
-
-    lightCycle1_trailColor = document.getElementById('moto1color').value;
-    lightCycle2_trailColor = document.getElementById('moto2color').value;
-
-    // Reset Mouse Position
-    mouseDownPos.reset();
-    mouseUpPos.reset();
-    mouseDownInCanvas = false;
-
-    setupGrid();
 }
 
 function countWinner() {
@@ -214,7 +197,7 @@ var redraw = function () {
         }
     }
 
-    
+
     const getHeadColor = (lightCycle) => {
         C.fillStyle = lightCycle.alive ? "#ff0000" : "#ffffff";
         C.fillRect(
@@ -236,7 +219,7 @@ var hasCollided = function (new_x, new_y) {
         new_x >= NUM_CELLS_HORIZONTAL ||
         new_y < 0 ||
         new_y >= NUM_CELLS_VERTICAL ||
-        grid[new_x][new_y] === CELL_OCCUPIED_P1 || 
+        grid[new_x][new_y] === CELL_OCCUPIED_P1 ||
         grid[new_x][new_y] === CELL_OCCUPIED_P2
     );
 };
@@ -255,6 +238,7 @@ var updateLightCycle = function (lightCycle, playerNum) {
     }
 };
 
+
 function advanceTimeout() {
     timeSpeed *= 0.995
     // console.log('Time Speed: ' + timeSpeed)
@@ -262,8 +246,9 @@ function advanceTimeout() {
     // un message pour prouver que l'animation continue
     if (isGameRunning) {
         console.log("Game is running: animating next frame");
+        
         advance();
-        setTimeout(advanceTimeout, timeSpeed);
+        timer = setTimeout(advanceTimeout, timeSpeed);
     }
 }
 
@@ -274,50 +259,66 @@ function advance() {
         redraw();
     } else {
         countWinner();
-        resetGame();
+        restartGame();
     }
 }
 
 function startGame() {
-    if (!isGameRunning) { 
+    if (!isGameRunning) {
         isGameRunning = true;
         console.log("Game started");
+
         advanceTimeout(); // Lance la première itération
-        // setTimeout(advance, 100); // Lance la première itération
     }
 }
 
-function pauseGame() {
+async function pauseGame() {
     if (isGameRunning) {
         isGameRunning = false; // Arrête le jeu
         console.log("Game paused");
+
+        // Promise to make sure the timer is cleared
+        const promise = new Promise((a, b) => {
+            clearTimeout(timer)
+            setTimeout(() => { a() }, timeSpeed + 1)
+        })
+
+        await promise
     }
 }
 
-function restartGame() {
-    pauseGame(); // Stoppe la boucle de jeu actuelle
-    
+async function restartGame() {
+    await pauseGame() // Stoppe la boucle de jeu actuelle
+
+    // Remette la vitesse du temps à 100%
+    timeSpeed = 100
+
     // Réinitialise l'état des LightCycles
     lightCycle1.reset(NUM_CELLS_VERTICAL - 2, -1); // player 1
     lightCycle2.reset(1, 1); // player 2
-    
+
     // Réinitialise la grille
-    setupGrid(); 
-    
+    setupGrid();
+
     // Récupérer les nouvelles couleurs après redémarrage
     lightCycle1_trailColor = document.getElementById('moto1color').value;
     lightCycle2_trailColor = document.getElementById('moto2color').value;
-    
+
+    // Reset Mouse Position
+    mouseDownPos.reset();
+    mouseUpPos.reset();
+    mouseDownInCanvas = false;
+
     // Redessine le canvas avec les nouvelles couleurs
-    redraw(); 
+    redraw();
 
     // Redémarre le jeu
-    startGame(); 
+    startGame();
 }
 
 
 
 
-window.onload = function() {
+window.onload = function () {
     startGame();
 };
