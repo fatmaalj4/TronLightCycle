@@ -11,20 +11,22 @@
 			text-align: center;
 		}
 
-		/* Flexbox layout to align the canvas and the score/bouton section */
 		.container {
 			display: flex;
-			justify-content: space-between;
 		}
 
-		/* Styling for the section containing the table and buttons */
+		.score-board-container {
+			display: flex; 
+			width:100%;
+			justify-content: center;
+		}
+
 		.score-board {
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 		}
 
-		/* Add spacing between buttons and the table */
 		.button-container {
 			margin-top: 20px;
 		}
@@ -39,48 +41,43 @@
 <body>
 	<h1 style="font-family: sans-serif;">Tron Light Cycles (Motocyclettes de lumi&egrave;re de Tron)</h1>
 	
-	<!-- Flexbox container to organize canvas and scoreboard next to each other -->
 	<div class="container">
-		<!-- Canvas for the game -->
 		<div>
 			<canvas id="myCanvas" width="700" height="700" style="border:2px solid #000000;">
 			</canvas>
 		</div>
 		
-		<!-- Scoreboard and buttons -->
-		<div class="score-board">
-			<!-- Table for displaying scores -->
-			<table style="font-family: sans-serif;">
-				<tr>
-					<th>Player 1 Wins</th>
-					<th>Player 2 Wins</th>
-					<th>Draws</th>
-				</tr>
-				<tr>
-					<td id="playerOneWinsDisplay">0</td>
-					<td id="playerTwoWinsDisplay">0</td>
-					<td id="drawsDisplay">0</td>
-				</tr>
-			</table>
-
-			<!-- Buttons for controlling the game -->
-			<div class="button-container">
-				<button onclick="pauseGame()">Pause</button>
-				<button onclick="startGame()">Go</button>
-				<button onclick="restartGame()">Restart</button>
-			</div>
-			<div class="left">
-				<p id="color1"></p>
-				<label for="moto1color">Choose Color for Player 1:</label>
-				<input type="color" id="moto1color" value="#253db3">
-			</div>
-			<div class="left">
-				<p id="color2"></p>
-				<label for="moto1color">Choose Color for Player 2:</label>
-				<input type="color" id="moto2color" value="#FF7575">
-			</div>
-			
-		</div>
+		 <div class="score-board-container">
+			 <div class="score-board">
+				 <table style="font-family: sans-serif;">
+					 <tr>
+						 <th>Player 1 Wins</th>
+						 <th>Player 2 Wins</th>
+						 <th>Draws</th>
+					 </tr>
+					 <tr>
+						 <td id="playerOneWinsDisplay">0</td>
+						 <td id="playerTwoWinsDisplay">0</td>
+						 <td id="drawsDisplay">0</td>
+					 </tr>
+				 </table>
+	 
+				 <div class="button-container">
+					 <button onclick="pauseGame()">Pause</button>
+					 <button onclick="startGame()">Go</button>
+					 <button onclick="restartGame()">Restart</button>
+				 </div>
+				 <div>
+					 <label for="moto1color">Choose Color for Player 1:</label>
+					 <input type="color" id="moto1color" value="#253db3">
+				 </div>
+				 <div>
+					 <label for="moto1color">Choose Color for Player 2:</label>
+					 <input type="color" id="moto2color" value="#FF7575">
+				 </div>
+				 
+			 </div>
+		 </div>
 	</div>
 
 	<script src="jeu.js"></script>
