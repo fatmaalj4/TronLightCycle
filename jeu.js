@@ -5,18 +5,21 @@ class LightCycle {
     vx = 0; // positive for right
     vy = 0; // positive for down
     alive = true;
+    color = '';
 
-    reset(yPos, yDir) {
+    reset(yPos, yDir, color) {
         this.x = NUM_CELLS_HORIZONTAL / 2;
         this.y = yPos;
         this.vx = 0;
         this.vy = yDir;
         this.alive = true;
+        this.color = color
     }
 
-    constructor(yPos, yDir) {
+    constructor(yPos, yDir, color) {
         this.y = yPos;
         this.vy = yDir;
+        this.color = color
     }
 }
 
@@ -59,9 +62,6 @@ var CELL_EMPTY = 0;
 var CELL_OCCUPIED_P1 = 1;
 var CELL_OCCUPIED_P2 = 2;
 
-var lightCycle1_trailColor = document.getElementById('moto1color').value;
-var lightCycle2_trailColor = document.getElementById('moto2color').value;
-
 var isGameRunning = false;
 // ====================================== Game Setup ======================================
 let timeSpeed = 100
@@ -78,10 +78,10 @@ const mouseUpPos = new Point2D();
 var mouseDownInCanvas = false; // Indicates that the mouse down happened inside the canvas
 
 // Current position and direction of light cycle 1
-const lightCycle1 = new LightCycle(NUM_CELLS_VERTICAL - 2, -1);
+const lightCycle1 = new LightCycle(NUM_CELLS_VERTICAL - 2, -1, moto1color.value);
 
 // Current y-position and y-direction of light cycle 2
-const lightCycle2 = new LightCycle(1, 1);
+const lightCycle2 = new LightCycle(1, 1, moto2color.value);
 
 function setupGrid() {
     grid = create2DArray(NUM_CELLS_HORIZONTAL, NUM_CELLS_VERTICAL);
@@ -178,7 +178,7 @@ var redraw = function () {
     for (var i = 0; i < NUM_CELLS_HORIZONTAL; ++i) {
         for (var j = 0; j < NUM_CELLS_VERTICAL; ++j) {
             if (grid[i][j] === 1) {
-                C.fillStyle = lightCycle1_trailColor; // Couleur de joueur 1
+                C.fillStyle = lightCycle1.color; // Couleur de joueur 1
                 C.fillRect(
                     x0 + i * cellSize + 1,
                     y0 + j * cellSize + 1,
@@ -186,7 +186,7 @@ var redraw = function () {
                     cellSize - 2
                 );
             } else if (grid[i][j] === 2) {
-                C.fillStyle = lightCycle2_trailColor; // Couleur de joueur 2
+                C.fillStyle = lightCycle2.color; // Couleur de joueur 2
                 C.fillRect(
                     x0 + i * cellSize + 1,
                     y0 + j * cellSize + 1,
@@ -294,15 +294,11 @@ async function restartGame() {
     timeSpeed = 100
 
     // Réinitialise l'état des LightCycles
-    lightCycle1.reset(NUM_CELLS_VERTICAL - 2, -1); // player 1
-    lightCycle2.reset(1, 1); // player 2
+    lightCycle1.reset(NUM_CELLS_VERTICAL - 2, -1, moto1color.value); // player 1
+    lightCycle2.reset(1, 1, moto2color.value); // player 2
 
     // Réinitialise la grille
     setupGrid();
-
-    // Récupérer les nouvelles couleurs après redémarrage
-    lightCycle1_trailColor = document.getElementById('moto1color').value;
-    lightCycle2_trailColor = document.getElementById('moto2color').value;
 
     // Reset Mouse Position
     mouseDownPos.reset();
